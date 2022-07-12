@@ -83,4 +83,7 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # ElasticSearch configuration
+  config.elastic_serach_url = 'localhost:9200'
 end

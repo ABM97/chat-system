@@ -14,7 +14,9 @@ module ExceptionHandler
 
   def handle_error(e)
     mapped = map_error(e)
-    mapped ||= Errors::StandardError.new
+    mapped ||= Errors::StandardError.new(detail: e.message)
+    logger.error e.message
+    logger.error e.backtrace.join("\n")
     render_error(mapped)
   end
 

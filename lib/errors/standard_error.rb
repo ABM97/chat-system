@@ -39,7 +39,8 @@ module Errors
     def initialize
       super(
         title: "Unprocessable Entity",
-        status: 422
+        status: 422,
+        detail: "We could not process this object."
       )
     end
   end

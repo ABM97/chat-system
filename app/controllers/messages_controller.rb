@@ -4,7 +4,13 @@ class MessagesController < ApplicationController
 
   # GET /applications/:application_token/chats/:chat_number/messages
   def index
-    render json: @chat.messages.paginate(page: params[:page], per_page: params[:size]), status: status, each_serializer: MessageSerializer
+    if params[:content].blank?
+      render json: @chat.messages.paginate(page: params[:page], per_page: params[:size]), status: status, each_serializer: MessageSerializer
+    else
+      render json: Message.search(params[:content], params[:chat_number], params[:from], params[:size])
+                          .map { |message| ElasticSearchMessageIndexSerializer.map(message) },
+             status: status
+    end
   end
 
   # GET /applications/:application_token/chats/:chat_number/messages/:number
@@ -14,7 +20,7 @@ class MessagesController < ApplicationController
 
   # POST /applications/:application_token/chats/:chat_number/messages
   def create
-    @message = @chat.messages.create!({ number: rand(10...42), body: message_params[:body]})
+    @message = @chat.messages.create!({ number: rand(10...200), body: message_params[:body] })
     render json: @message, status: status, serializer: MessageSerializer
   end
 
@@ -23,7 +29,6 @@ class MessagesController < ApplicationController
     @message.update(message_params)
     head :no_content
   end
-
 
   def message_params
     params.require(:message).permit(:body)
