@@ -1,6 +1,6 @@
 class ChatsController < ApplicationController
   before_action :set_application
-  before_action :set_chat_item, only: [:show, :update]
+  before_action :set_chat, only: [:show, :update]
 
   # GET /applications/:application_token/chats
   def index
@@ -9,7 +9,7 @@ class ChatsController < ApplicationController
 
   # GET /applications/:application_token/chats/:number
   def show
-    render json: @chat, status: status, serializer: ChatSerializer
+    render json: @chat, status: status, serializer: ChatShowSerializer
   end
 
   # POST /applications/:application_token/chats
@@ -18,21 +18,16 @@ class ChatsController < ApplicationController
     render json: @chat, status: status, serializer: ChatSerializer
   end
 
-  # PUT /applications/:application_token/chats/:number
-  def update
-    @chat.update(chat_params)
-    head :no_content
-  end
-
   def chat_params
     params.require(:chat).permit
   end
 
-  def set_chat_item
-    @chat = Chat.find(number: params[:number])
+  def set_chat
+    @chat = Chat.find_by(number: params[:number])
   end
 
   def set_application
     @application = Application.find_by(token: params[:application_token])
   end
+
 end

@@ -23,12 +23,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_11_214444) do
     t.bigint "messages_count", default: 0, null: false
     t.bigint "application_id", null: false
     t.index ["application_id"], name: "app_id_idx"
+    t.index ["number"], name: "number_idx", unique: true
   end
 
   create_table "messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "body", null: false
+    t.bigint "number", null: false
     t.bigint "chat_id", null: false
     t.index ["chat_id"], name: "chat_id_idx"
+    t.index ["number"], name: "number_idx", unique: true
   end
 
   add_foreign_key "chats", "applications", name: "chat_to_application_fk"

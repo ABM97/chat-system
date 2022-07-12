@@ -3,18 +3,18 @@ class ApplicationsController < ApplicationController
 
   # GET /applications
   def index
-    render json: Application.paginate(page: params[:page], per_page: params[:size]), status: status, each_serializer: ApplicationGetSerializer
+    render json: Application.paginate(page: params[:page], per_page: params[:size]), status: status, each_serializer: ApplicationIndexSerializer
   end
 
   # GET /applications/:token
   def show
-    render json: @application, status: status, serializer: ApplicationGetSerializer
+    render json: @application, status: status, serializer: ApplicationShowSerializer
   end
 
   # POST /applications
   def create
     @application = Application.create!(application_params)
-    render json: @application, status: status, serializer: ApplicationCreationSerializer
+    render json: @application, status: status, serializer: ApplicationCreateSerializer
   end
 
   # PUT /applications/:token
@@ -30,7 +30,7 @@ class ApplicationsController < ApplicationController
   end
 
   def set_application
-    @application = Application.find(token: params[:token])
+    @application = Application.find_by(token: params[:token])
   end
 
 end

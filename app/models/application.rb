@@ -3,4 +3,5 @@ class Application < ApplicationRecord
   ulid :token, auto_generate: true
   has_many :chats, dependent: :destroy
   validates_presence_of :name
+  validates :token, uniqueness: true
 end
