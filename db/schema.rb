@@ -15,28 +15,22 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_11_214444) do
     t.binary "token", limit: 16
     t.string "name", null: false
     t.bigint "chats_count", default: 0, null: false
-    t.datetime "updated_at"
-    t.virtual "created_at", type: :datetime, precision: nil, as: "from_unixtime((conv(hex((`token` >> 80)),16,10) / 1000.0))"
     t.index ["token"], name: "unique_token_idx", unique: true
   end
 
   create_table "chats", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "number", null: false
     t.bigint "messages_count", default: 0, null: false
-    t.bigint "app_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["app_id"], name: "app_id_idx"
+    t.bigint "application_id", null: false
+    t.index ["application_id"], name: "app_id_idx"
   end
 
   create_table "messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "body", null: false
     t.bigint "chat_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.index ["chat_id"], name: "chat_id_idx"
   end
 
-  add_foreign_key "chats", "applications", column: "app_id", name: "chat_to_application_fk"
+  add_foreign_key "chats", "applications", name: "chat_to_application_fk"
   add_foreign_key "messages", "chats", name: "message_to_chat_fk"
 end

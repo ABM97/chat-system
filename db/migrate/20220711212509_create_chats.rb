@@ -3,10 +3,9 @@ class CreateChats < ActiveRecord::Migration[7.0]
     create_table :chats do |t|
       t.bigint :number, null: false
       t.bigint :messages_count, null: false, default: 0
-      t.bigint :app_id, null: false
-      t.timestamps
+      t.bigint :application_id, null: false
     end
-    add_foreign_key :chats, :applications, column: :app_id, name: :chat_to_application_fk
-    add_index(:chats, :app_id, name: :app_id_idx)
+    add_foreign_key :chats, :applications, column: :application_id, name: :chat_to_application_fk
+    add_index(:chats, :application_id, name: :app_id_idx)
   end
 end
