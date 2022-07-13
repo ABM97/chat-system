@@ -1,6 +1,6 @@
 class ChatsController < ApplicationController
   before_action :set_application
-  before_action :set_chat, only: [:show, :update]
+  before_action :set_chat, only: [:show]
 
   # GET /applications/:application_token/chats
   def index
@@ -14,7 +14,7 @@ class ChatsController < ApplicationController
 
   # POST /applications/:application_token/chats
   def create
-    @chat = @application.chats.create!({ number: rand(10...42) })
+    @chat = @application.chats.create!({ number: RedisService.get_current_counter_value(Chat, "application_#{@application.id}", application_id: @application.id), check_sum: SecureRandom.uuid })
     render json: @chat, status: status, serializer: ChatSerializer
   end
 

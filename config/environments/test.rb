@@ -59,6 +59,11 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
   #
 
+  # Redis configuration
+  config.redis_host = 'redis://localhost'
+  config.redis_port = 6379
+  config.redis_db = 0
+
   # ElasticSearch configuration
   config.elastic_serach_url = 'localhost:9200'
 end

@@ -1,10 +1,12 @@
+require 'application_record'
+
 class Message < ApplicationRecord
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
 
   belongs_to :chat
   validates_presence_of :body
-  validates :number, uniqueness: true
+  validates :number, uniqueness: { scope: :chat_id }
 
   index_name self.name.downcase
 

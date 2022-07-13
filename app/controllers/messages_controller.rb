@@ -20,7 +20,7 @@ class MessagesController < ApplicationController
 
   # POST /applications/:application_token/chats/:chat_number/messages
   def create
-    @message = @chat.messages.create!({ number: rand(10...200), body: message_params[:body] })
+    @message = @chat.messages.create!({ number: RedisService.get_current_counter_value(Message, "app_#{@application.id}_chat_#{@chat.id}", chat_id: @chat.id), body: message_params[:body], check_sum: SecureRandom.uuid })
     render json: @message, status: status, serializer: MessageSerializer
   end
 
@@ -41,7 +41,7 @@ class MessagesController < ApplicationController
   end
 
   def set_chat
-    @chat = Chat.find_by(number: params[:chat_number])
+    @chat = Chat.find_by(application_id: @application.id, number: params[:chat_number])
   end
 
   def set_message

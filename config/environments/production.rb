@@ -84,6 +84,11 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
+  # Redis configuration
+  config.redis_host = ENV["REDIS_HOST"]
+  config.redis_port =  ENV["REDIS_PORT"]
+  config.redis_db =  ENV["REDIS_DB"]
+
   # ElasticSearch configuration
-  config.elastic_serach_url = 'localhost:9200'
+  config.elastic_serach_url =  ENV["ELASTIC_SEARCH_URL"]
 end

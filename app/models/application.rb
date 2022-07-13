@@ -1,3 +1,5 @@
+require 'application_record'
+
 class Application < ApplicationRecord
   include ULID::Rails
   ulid :token, auto_generate: true
