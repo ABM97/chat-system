@@ -85,10 +85,13 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Redis configuration
-  config.redis_host = ENV["REDIS_HOST"]
-  config.redis_port =  ENV["REDIS_PORT"]
-  config.redis_db =  ENV["REDIS_DB"]
+  config.redis_url = ENV["REDIS_HOST"]
+
 
   # ElasticSearch configuration
   config.elastic_serach_url =  ENV["ELASTIC_SEARCH_URL"]
+
+  # RabbitMQ configuration
+  config.rabbitMQ_host = ENV["RABBITMQ_HOST"]
+  config.rabbitMQ_port = ENV["RABBITMQ_PORT"]
 end

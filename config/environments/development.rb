@@ -64,10 +64,13 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   # Redis configuration
-  config.redis_host = 'localhost'
-  config.redis_port = 6379
-  config.redis_db = 0
+  config.redis_url = 'redis://localhost:6379'
 
   # ElasticSearch configuration
   config.elastic_serach_url = 'localhost:9200'
+
+  # RabbitMQ configuration
+  config.rabbitMQ_host = 'localhost'
+  config.rabbitMQ_port = '5672'
+
 end

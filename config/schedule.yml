@@ -1,0 +1,5 @@
+# config/schedule.yml
+generate_random_user:
+  cron: "*/1 * * * *"
+  class: "Workers::SyncRedisCounterToDbWorker"
+  queue: default
