@@ -9,7 +9,6 @@ end
 Sneakers.configure connection: Connection.sneakers,
                    log: STDOUT,
                    durable: true,
-                   threads: 10,
                    ack: true
 
-Sneakers.logger.level = Logger::INFO
+Sneakers.logger.level = Logger::ERROR

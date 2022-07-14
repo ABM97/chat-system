@@ -1,6 +1,6 @@
 require 'securerandom'
 require 'redis_service'
-require 'rabbitmq_publisher'
+require 'rabbitmq_producer'
 
 class ApplicationController < ActionController::API
   include ExceptionHandler

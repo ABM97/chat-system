@@ -1,13 +1,17 @@
-require 'rabbitmq_base_service'
-
 class RabbitmqProducer
 
-  attr_accessor :new_connection, :channel
+  attr_accessor :channel
+
+  def self.publish(queue_name, object)
+    publisher = RabbitmqProducer.new
+    queue = publisher.send(:declare_queue, queue_name)
+    publisher.send(:publish_message, queue.name, object.to_json)
+  end
+
+  private
 
   def initialize
-    @new_connection = RabbitmqBaseService.new
-    @new_connection.start
-    @channel = @new_connection.create_channel
+    @channel = $rmq.create_channel
     puts "Publisher Channel Created"
   end
 
@@ -22,13 +26,10 @@ class RabbitmqProducer
     @channel.default_exchange.publish(msg, routing_key: routing_key, persistent: persistent)
     success = @channel.wait_for_confirms
     unless success
+      @channel.close
       raise StandardError.new(message: 'Failed to publish job')
     end
-  end
-
-  def close_connection
-    puts "Connections Closed"
-    @new_connection.close
+    @channel.close
   end
 
 end

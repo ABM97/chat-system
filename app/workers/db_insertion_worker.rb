@@ -1,3 +1,5 @@
+require 'rabbitmq_producer'
+
 class DbInsertionWorker
   include Sneakers::Worker
 
@@ -17,7 +19,6 @@ class DbInsertionWorker
         puts error.message
       end
     end
-    ActiveRecord::Base.connection.close
   end
 
   private
@@ -29,7 +30,7 @@ class DbInsertionWorker
     else
       unless chat.check_sum == job_data["check_sum"]
         # handling mechanism should be implemented, 2 different objects got the same number redis fail to persist data and died before calling fsync
-        RabbitmqPublisher.publish("number_generation_failures", job_data)
+        RabbitmqProducer.RabbitmqProducer("number_generation_failures", job_data)
       end
     end
   end
@@ -41,7 +42,7 @@ class DbInsertionWorker
     else
       unless message.check_sum == job_data["check_sum"]
         # handling mechanism should be implemented, 2 different objects got the same number redis fail to persist data and died before calling fsync
-        RabbitmqPublisher.publish("number_generation_failures", job_data)
+        RabbitmqProducer.RabbitmqProducer("number_generation_failures", job_data)
       end
     end
   end
