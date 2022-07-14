@@ -1,5 +1,3 @@
-require 'redis_service'
-
 class DbInsertionWorker
   include Sneakers::Worker
 
@@ -32,7 +30,6 @@ class DbInsertionWorker
       unless chat.check_sum == job_data["check_sum"]
         # handling mechanism should be implemented, 2 different objects got the same number redis fail to persist data and died before calling fsync
         RabbitmqPublisher.publish("number_generation_failures", job_data)
-        RedisService.decrement_counter_value("application_#{job_data["application_id"]}")
       end
     end
   end
@@ -45,7 +42,6 @@ class DbInsertionWorker
       unless message.check_sum == job_data["check_sum"]
         # handling mechanism should be implemented, 2 different objects got the same number redis fail to persist data and died before calling fsync
         RabbitmqPublisher.publish("number_generation_failures", job_data)
-        RedisService.decrement_counter_value("chat_#{job_data["chat_id"]}")
       end
     end
   end
