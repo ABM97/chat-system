@@ -20,10 +20,10 @@
  
  ## Flow Diagram
  
-  ![chat_system drawio](https://user-images.githubusercontent.com/25717199/178975640-771043bb-c681-41ad-9ec3-8304fbed252c.png)
+![chat_system drawio (1)](https://user-images.githubusercontent.com/25717199/179052879-2cab44ad-6ba0-4cf5-acc1-d88c511123f9.png)
 
    - The user send creation request [chat-message] this request will be async, we will just get the incremental number from redis and publish creation task for rabbitMQ and send send the number back to the user.
-   - A worker will consume task from rabbitMQ and insert the data to the database.
+   - A worker will consume task from rabbitMQ and insert the data to the database and Active model will send data to elastic seach in case the task was message insertion
    - Another worker will run every hour to check if a count has been updated in the last hour and sync the counter data to the database.
 
 
