@@ -52,7 +52,7 @@ $ curl -X POST \
 
 ```sh
 $ curl -X POST \
-    http://localhost:3000/applications/{application_token}/chats/{chat_number} \
+    http://localhost:3000/applications/{application_token}/chats/{chat_number}/messages \
     -H 'content-type: application/json' \
     -d '{
   	    "body": "message-body-content"
@@ -62,8 +62,8 @@ $ curl -X POST \
 #### Search message content partially
 
 ```sh
-$ curl -X POST \
-    http://localhost:3000/applications/{application_token}/chats/{chat_number}/messages?content={search_term}&page={page_number_0_based}&size={page_size}
+$ curl -X GET \
+    "http://localhost:3000/applications/{application_token}/chats/{chat_number}/messages?content={search_term}&page={page_number_0_based}&size={page_size}"
 ```
 
 
