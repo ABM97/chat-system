@@ -7,7 +7,7 @@ class MessagesController < ApplicationController
     if params[:content].blank?
       render json: @chat.messages.paginate(page: params[:page], per_page: params[:size]), status: status, each_serializer: MessageSerializer
     else
-      render json: Message.search(params[:content], @chat.id, params[:from], params[:size])
+      render json: Message.search(params[:content], @chat.id, params[:page], params[:size])
                           .map { |message| ElasticSearchMessageIndexSerializer.map(message) },
              status: status
     end
