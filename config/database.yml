@@ -51,5 +51,6 @@ test:
 production:
   <<: *default
   database: chat_system_api_production
-  username: chat_system_api
+  host: mysql
+  port:  3306
   password: <%= ENV["CHAT_SYSTEM_API_DATABASE_PASSWORD"] %>

@@ -1,5 +1,5 @@
 # config/schedule.yml
 sync_redis_counters_to_db:
-  cron: "0 * * * *"
+  cron: "*/30 * * * *"
   class: "Workers::SyncRedisCounterToDbWorker"
   queue: default

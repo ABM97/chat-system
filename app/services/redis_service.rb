@@ -3,6 +3,9 @@ require 'message'
 
 module RedisService
 
+  BATCH_SIZE = 50
+  COUNTER_SYNC_THRESHOLD_IN_MINUTE = 40
+
   def self.increment_and_get_counter_value(object_name)
     $redis.with do |connection|
       connection.multi do |multi|
@@ -14,7 +17,6 @@ module RedisService
 
   def self.sync_counter_data(prefix, model, count_field)
     batch = []
-    batch_size = 50
     $redis.with do |connection|
       connection.scan_each(:match => "#{prefix}_*") do |key|
         object = {}
@@ -22,9 +24,9 @@ module RedisService
           object[field] = value
         end
         minutes_diff = ((Time.now.to_i - object["timestamp"].to_i) / 60.0).round
-        if minutes_diff <= 70
+        if minutes_diff <= COUNTER_SYNC_THRESHOLD_IN_MINUTE
           batch << { id: key.split('_')[1].to_i, count_field.to_s => object["number"] }
-          if batch.size == batch_size
+          if batch.size == BATCH_SIZE
             execute_batch_update_query(model, count_field, batch)
             batch = []
           end
