@@ -14,7 +14,7 @@ class ChatsController < ApplicationController
 
   # POST /applications/:application_token/chats
   def create
-    number = RedisService.get_current_counter_value("application_#{@application.id}")
+    number = RedisService.increment_and_get_counter_value("application_#{@application.id}")
     RabbitmqPublisher.publish("db_tasks", { number: number, application_id: @application.id, check_sum: SecureRandom.uuid, table: :Chat })
     render json: { chat_number: number }, status: status
   end

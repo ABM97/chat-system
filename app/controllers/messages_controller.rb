@@ -7,7 +7,7 @@ class MessagesController < ApplicationController
     if params[:content].blank?
       render json: @chat.messages.paginate(page: params[:page], per_page: params[:size]), status: status, each_serializer: MessageSerializer
     else
-      render json: Message.search(params[:content], params[:application_token], params[:chat_number], params[:from], params[:size])
+      render json: Message.search(params[:content], @chat.id, params[:from], params[:size])
                           .map { |message| ElasticSearchMessageIndexSerializer.map(message) },
              status: status
     end
@@ -20,7 +20,7 @@ class MessagesController < ApplicationController
 
   # POST /applications/:application_token/chats/:chat_number/messages
   def create
-    number = RedisService.get_current_counter_value("chat_#{@chat.id}")
+    number = RedisService.increment_and_get_counter_value("chat_#{@chat.id}")
     RabbitmqPublisher.publish("db_tasks", { number: number, chat_id: @chat.id, body: message_params[:body], check_sum: SecureRandom.uuid, table: :Message })
     render json: { message_number: number }, status: status
   end

@@ -27,8 +27,7 @@ class Message < ApplicationRecord
   } do
     mapping dynamic: 'false' do
       indexes :message_body, type: 'text', analyzer: 'comment_analyzer'
-      indexes :chat_number, type: 'keyword'
-      indexes :application_token, type: 'keyword'
+      indexes :chat_id, type: 'keyword'
     end
   end
 
@@ -36,13 +35,14 @@ class Message < ApplicationRecord
     {
       message_body: self.body,
       message_number: self.number,
+      chat_id: chat.id,
       chat_number: chat.number,
       application_name: chat.application.name,
       application_token: chat.application.token,
     }.as_json
   end
 
-  def self.search(message_partial_data, application_token, chat_number, from = 0, size = 10)
+  def self.search(message_partial_data, chat_id, from = 0, size = 10)
     __elasticsearch__.search(
       {
         from: from,
@@ -56,11 +56,8 @@ class Message < ApplicationRecord
                 }
               },
             filter: {
-              bool: {
-                must: [
-                  { term: { chat_number: chat_number } },
-                  { term: { application_token: application_token } }
-                ]
+              term: {
+                chat_id: chat_id
               }
             }
           }
