@@ -20,7 +20,7 @@
  
  ## Flow Diagram
  
-![chat_system drawio (1)](https://user-images.githubusercontent.com/25717199/179052879-2cab44ad-6ba0-4cf5-acc1-d88c511123f9.png)
+![chat_system drawio (2)](https://user-images.githubusercontent.com/25717199/179053717-29056869-c531-494a-8a09-e678cec47b16.png)
 
    - The user send creation request [chat-message] this request will be async, we will just get the incremental number from redis and publish creation task for rabbitMQ and send send the number back to the user.
    - A worker will consume task from rabbitMQ and insert the data to the database and Active model will send data to elastic seach in case the task was message insertion
