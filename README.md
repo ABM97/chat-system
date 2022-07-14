@@ -25,3 +25,46 @@
    - The user send creation request [chat-message] this request will be async, we will just get the incremental number from redis and publish creation task for rabbitMQ and send send the number back to the user.
    - A worker will consume task from rabbitMQ and insert the data to the database.
    - Another worker will run every hour to check if a count has been updated in the last hour and sync the counter data to the database.
+
+
+### List of commands to test the app
+
+The endpoints are exposed on port `3000`
+#### Create new application
+
+```sh
+$ curl -X POST \
+    http://localhost:3000/applications \
+    -H 'content-type: application/json' \
+    -d '{
+  	    "name": "company-name"
+     }'
+```
+
+#### Create new chat
+
+```sh
+$ curl -X POST \
+    http://localhost:3000/applications/{application_token}/chats
+```
+
+#### Create new message
+
+```sh
+$ curl -X POST \
+    http://localhost:3000/applications/{application_token}/chats/{chat_number} \
+    -H 'content-type: application/json' \
+    -d '{
+  	    "body": "message-body-content"
+     }'
+```
+
+#### Search message content partially
+
+```sh
+$ curl -X POST \
+    http://localhost:3000/applications/{application_token}/chats/{chat_number}/messages?content={search_term}&page={page_number_0_based}&size={page_size}
+```
+
+
+
