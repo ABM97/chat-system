@@ -6,5 +6,3 @@ WORKDIR /app
 COPY Gemfile* ./
 RUN bundle install
 COPY . .
-
-ENV RAILS_ENV production

@@ -1,27 +1,17 @@
 version: '3.9'
 
-volumes:
-  mysql_data:
-    driver: local
-  redis_data:
-    driver: local
-  rabbit_mq_data:
-    driver: local
-  es_data:
-    driver: local
-
 services:
 
   mysql:
     image: mysql
     ports:
-      - 33306:3306
+      - 3306
     command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: chat_system_api_production
+      MYSQL_DATABASE: chat_system_api_test
+    tmpfs:
+      - /var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "mysql" ]
       interval: 3s
@@ -31,9 +21,7 @@ services:
     image: redis
     restart: always
     ports:
-      - 6379:6379
-    volumes:
-      - redis_data:/data
+      - 6379
     command: redis-server --appendonly yes
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
@@ -41,12 +29,9 @@ services:
       retries: 10
 
   rabbit_mq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3
     ports:
       - 5672
-      - 8080:15672
-    volumes:
-      - rabbit_mq_data:/var/lib/rabbitmq/mnesia/
     healthcheck:
       test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
       interval: 3s
@@ -55,9 +40,7 @@ services:
   elastic_search:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.2
     ports:
-      - 9200:9200
-    volumes:
-      - es_data:/usr/share/elasticsearch/data
+      - 9200
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
@@ -69,16 +52,26 @@ services:
       interval: 3s
       retries: 10
 
-  web:
+  sneakers:
     build: .
     restart: always
-    ports:
-      - 3000:3000
-    command: sh -c "sh ./init.sh && rails s -p 3000 -b '0.0.0.0'"
-    healthcheck:
-      test: [ "CMD-SHELL", "curl --silent --fail http://web:3000/healthcheck || exit 1" ]
-      interval: 3s
-      retries: 10
+    command: rake sneakers:run
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbit_mq:
+        condition: service_healthy
+    environment:
+      - RAILS_ENV=test
+      - ELASTIC_SEARCH_URL=elastic_search:9200
+      - REDIS_HOST=redis://redis:6379
+      - RABBITMQ_HOST=rabbit_mq
+      - RABBITMQ_PORT=5672
+
+  web-test:
+    build: .
+    restart: always
+    command: bash -c "bundle exec rake db:migrate > /dev/null 2>&1 && bundle exec rake es:build_index && bundle exec rspec"
     depends_on:
       mysql:
         condition: service_healthy
@@ -88,53 +81,12 @@ services:
         condition: service_healthy
       elastic_search:
         condition: service_healthy
+      sneakers:
+        condition: service_started
     environment:
-      - RAILS_ENV=production
-      - RAILS_LOG_TO_STDOUT=true
+      - RAILS_ENV=test
       - ELASTIC_SEARCH_URL=elastic_search:9200
       - REDIS_HOST=redis://redis:6379
       - RABBITMQ_HOST=rabbit_mq
       - RABBITMQ_PORT=5672
-      - CHAT_SYSTEM_API_DATABASE_PASSWORD=root
-
-  sidekiq_cron:
-    build: .
-    restart: always
-    command: bundle exec sidekiq
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      web:
-        condition: service_healthy
-    environment:
-      - RAILS_ENV=production
-      - RAILS_LOG_TO_STDOUT=true
-      - ELASTIC_SEARCH_URL=elastic_search:9200
-      - REDIS_HOST=redis://redis:6379
-      - RABBITMQ_HOST=rabbit_mq
-      - RABBITMQ_PORT=5672
-      - CHAT_SYSTEM_API_DATABASE_PASSWORD=root
-
-
-  sneakers:
-    build: .
-    restart: always
-    command: bundle exec rake sneakers:run
-    depends_on:
-      mysql:
-        condition: service_healthy
-      rabbit_mq:
-        condition: service_healthy
-      web:
-        condition: service_healthy
-    environment:
-      - RAILS_ENV=production
-      - RAILS_LOG_TO_STDOUT=true
-      - ELASTIC_SEARCH_URL=elastic_search:9200
-      - REDIS_HOST=redis://redis:6379
-      - RABBITMQ_HOST=rabbit_mq
-      - RABBITMQ_PORT=5672
-      - CHAT_SYSTEM_API_DATABASE_PASSWORD=root
 

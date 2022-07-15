@@ -60,14 +60,15 @@ Rails.application.configure do
   #
 
   # Redis configuration
-  config.redis_url = 'redis://localhost:6379'
+  config.redis_url = ENV["REDIS_HOST"]
+
 
   # ElasticSearch configuration
-  config.elastic_serach_url = 'localhost:9200'
+  config.elastic_serach_url =  ENV["ELASTIC_SEARCH_URL"]
 
   # RabbitMQ configuration
-  config.rabbitMQ_host = 'localhost'
-  config.rabbitMQ_port = '5672'
+  config.rabbitMQ_host = ENV["RABBITMQ_HOST"]
+  config.rabbitMQ_port = ENV["RABBITMQ_PORT"]
 
 end
 
