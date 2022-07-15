@@ -1,7 +1,12 @@
 # Chat-system
 
+> :warning: **The application rely on docker compose plugin that can run docker compose files of version 3.9!** 
+
+> :warning: **Tested with```Docker Compose version v2.6.0```**
+
+
 ## System-components
-- Rails
+- Rails-**7**
   - The back-end technology used for the back-end server
 - MySQL
   - Database storage
@@ -23,7 +28,7 @@
 ![chat_system drawio (2)](https://user-images.githubusercontent.com/25717199/179053717-29056869-c531-494a-8a09-e678cec47b16.png)
 
    - The user send creation request [chat-message] this request will be async, we will just get the incremental number from redis and publish creation task for rabbitMQ and send send the number back to the user.
-   - A worker will consume task from rabbitMQ and insert the data to the database and Active model will send data to elastic seach in case the task was message insertion
+   - A worker will consume task from rabbitMQ and insert the data to the database and Active model will send data to elastic search in case the task was message insertion
    - Another worker will run every hour to check if a count has been updated in the last hour and sync the counter data to the database.
 
 
@@ -66,5 +71,6 @@ $ curl -X GET \
     "http://localhost:3000/applications/{application_token}/chats/{chat_number}/messages?content={search_term}&page={page_number_0_based}&size={page_size}"
 ```
 
+## Tests
 
-
+> Similar to the application tests requires docker compose plugin that can run docker compose files of version 3.9 and the following comand `./run-tests.sh` start it.
