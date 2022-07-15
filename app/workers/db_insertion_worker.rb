@@ -8,6 +8,7 @@ class DbInsertionWorker
   def work(raw_post)
     ActiveRecord::Base.connection_pool.with_connection do
       job_data = JSON.parse(raw_post)
+      p job_data
       begin
         if job_data["table"] == "Chat"
           handle_chat_task(job_data)
@@ -30,7 +31,7 @@ class DbInsertionWorker
     else
       unless chat.check_sum == job_data["check_sum"]
         # handling mechanism should be implemented, 2 different objects got the same number redis fail to persist data and died before calling fsync
-        RabbitmqProducer.RabbitmqProducer("number_generation_failures", job_data)
+        RabbitmqProducer.publish("number_generation_failures", job_data)
       end
     end
   end
@@ -42,7 +43,7 @@ class DbInsertionWorker
     else
       unless message.check_sum == job_data["check_sum"]
         # handling mechanism should be implemented, 2 different objects got the same number redis fail to persist data and died before calling fsync
-        RabbitmqProducer.RabbitmqProducer("number_generation_failures", job_data)
+        RabbitmqProducer.publish("number_generation_failures", job_data)
       end
     end
   end

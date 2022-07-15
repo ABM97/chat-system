@@ -1,6 +1,6 @@
 module Errors
   class StandardError < ::StandardError
-    def initialize(title: nil, detail: nil, status: nil)
+    def initialize(title: nil, status: nil, detail: nil)
       @title = title || "Something went wrong"
       @detail = detail || "We encountered unexpected error, but our developers had been already notified about it"
       @status = status || 500
@@ -41,6 +41,16 @@ module Errors
         title: "Unprocessable Entity",
         status: 422,
         detail: "We could not process this object."
+      )
+    end
+  end
+
+  class BadRequest < Errors::StandardError
+    def initialize
+      super(
+        title: "Bad Request",
+        status: 400,
+        detail: "We could not process that request."
       )
     end
   end

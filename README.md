@@ -73,4 +73,4 @@ $ curl -X GET \
 
 ## Tests
 
-> Similar to the application tests requires docker compose plugin that can run docker compose files of version 3.9 and the following comand `./run-tests.sh` start it.
+> Similar to the application tests requires docker compose plugin that can run docker compose files of version 3.9 and the following command `./run-tests.sh` start it.

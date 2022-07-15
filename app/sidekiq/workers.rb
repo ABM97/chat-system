@@ -23,11 +23,11 @@ module Workers
     private
 
     def sync_chats_count
-      RedisService.sync_counter_data("application", Application, "chats_count");
+      RedisService.sync_counter_data("application", Application, "chats_count")
     end
 
     def sync_messages_count
-      RedisService.sync_counter_data("chat", Chat, "messages_count");
+      RedisService.sync_counter_data("chat", Chat, "messages_count")
     end
 
   end

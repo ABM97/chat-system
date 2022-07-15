@@ -8,6 +8,22 @@ class Message < ApplicationRecord
   validates_presence_of :body
   validates :number, uniqueness: { scope: :chat_id }
 
+  after_commit on: [:create] do
+    __elasticsearch__.index_document if self.body?
+  end
+
+  after_commit on: [:update] do
+    if self.body?
+      __elasticsearch__.update_document
+    else
+      __elasticsearch__.delete_document
+    end
+  end
+
+  after_commit on: [:destroy] do
+    __elasticsearch__.delete_document if self.body?
+  end
+
   index_name self.name.downcase
 
   settings analysis: {
@@ -26,20 +42,13 @@ class Message < ApplicationRecord
     }
   } do
     mapping dynamic: 'false' do
-      indexes :message_body, type: 'text', analyzer: 'comment_analyzer'
-      indexes :chat_id, type: 'keyword'
+      indexes :body, type: 'text', analyzer: 'comment_analyzer'
+      indexes "chat.id", type: 'keyword'
     end
   end
 
   def as_indexed_json(options = {})
-    {
-      message_body: self.body,
-      message_number: self.number,
-      chat_id: chat.id,
-      chat_number: chat.number,
-      application_name: chat.application.name,
-      application_token: chat.application.token,
-    }.as_json
+    self.as_json(include: { chat: { include: { application: { only: [:token, :name] } }, only: [:id, :number] } }, only: [:body, :number])
   end
 
   def self.search(message_partial_data, chat_id, from = 0, size = 10)
@@ -52,12 +61,12 @@ class Message < ApplicationRecord
             must:
               {
                 match: {
-                  message_body: message_partial_data
+                  body: message_partial_data
                 }
               },
             filter: {
               term: {
-                chat_id: chat_id
+                "chat.id": chat_id
               }
             }
           }

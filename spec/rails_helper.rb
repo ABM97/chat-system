@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'database_cleaner/active_record'
-require 'database_cleaner-redis'
 
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
@@ -18,10 +17,10 @@ RSpec.configure do |config|
 
   config.include RequestSpecHelper
 
+  # CLean Database
   config.before(:suite) do
     DatabaseCleaner[:active_record].clean_with(:deletion)
-    DatabaseCleaner[:active_record].strategy = :transaction
-    DatabaseCleaner[:redis].strategy = :deletion
+    DatabaseCleaner[:active_record].strategy = :deletion
   end
 
   config.around(:each) do |example|
@@ -30,36 +29,29 @@ RSpec.configure do |config|
     end
   end
 
+  # Clean RabbitMQ
   config.before(:each) do
-    $rmq.create_channel.queue("db_tasks").purge
-  end
-
-  # Create indexes for all elastic searchable models
-  config.before :each, elasticsearch: true do
-    ActiveRecord::Base.descendants.each do |model|
-      if model.respond_to?(:__elasticsearch__)
-        begin
-          model.__elasticsearch__.create_index!
-          model.__elasticsearch__.refresh_index!
-        rescue Elasticsearch::Transport::Transport::Errors::NotFound => e
-          # This kills "Index does not exist" errors being written to console
-        rescue => e
-          STDERR.puts "There was an error creating the elasticsearch index for #{model.name}: #{e.inspect}"
-        end
-      end
+    channel = $rmq.create_channel
+    %w[db_tasks number_generation_failures].each do |queue_name|
+      channel.queue(queue_name, durable: true).purge
     end
   end
 
-  # Delete indexes for all elastic searchable models to ensure clean state between tests
-  config.after :each, elasticsearch: true do
-    ActiveRecord::Base.descendants.each do |model|
-      if model.respond_to?(:__elasticsearch__)
-        begin
-          model.__elasticsearch__.delete_index!
-        rescue Elasticsearch::Transport::Transport::Errors::NotFound => e
-          # This kills "Index does not exist" errors being written to console
-        rescue => e
-          STDERR.puts "There was an error removing the elasticsearch index for #{model.name}: #{e.inspect}"
+  # clean ElasticSearch
+  config.before :each do
+    Message.__elasticsearch__.create_index!(force: true)
+    Message.__elasticsearch__.refresh_index!
+  end
+
+  # clean redis
+  config.before(:each) do
+    $redis.with do |connection|
+      connection.scan_each do |key|
+        keys = connection.hgetall(key).keys
+        connection.multi do |multi|
+          keys.each do |k|
+            multi.hdel key, k
+          end
         end
       end
     end

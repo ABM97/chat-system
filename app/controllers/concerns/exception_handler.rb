@@ -1,9 +1,13 @@
+require 'errors/standard_error'
+
 module ExceptionHandler
   extend ActiveSupport::Concern
 
   ERRORS = {
     'ActiveRecord::RecordNotFound' => 'Errors::NotFound',
     'ActiveRecord::RecordInvalid' => 'Errors::UnprocessableEntity',
+    'ActiveModel::ForbiddenAttributesError' => 'Errors::BadRequest',
+    'ActionController::ParameterMissing' => 'Errors::BadRequest'
   }
 
   included do
@@ -22,7 +26,8 @@ module ExceptionHandler
 
   def map_error(e)
     error_klass = e.class.name
-    e if ERRORS.values.include?(error_klass)
+    return e if ERRORS.values.include?(error_klass)
+    ERRORS[error_klass].constantize&.new
   end
 
   def render_error(error)

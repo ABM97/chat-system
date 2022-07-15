@@ -38,15 +38,15 @@ class MessagesController < ApplicationController
   private
 
   def set_application
-    @application = Application.find_by(token: params[:application_token])
+    @application = Application.find_by!(token: params[:application_token])
   end
 
   def set_chat
-    @chat = Chat.find_by(application_id: @application.id, number: params[:chat_number])
+    @chat = Chat.find_by!(application_id: @application.id, number: params[:chat_number])
   end
 
   def set_message
-    @message = Message.find_by(number: params[:number])
+    @message = Message.find_by!(number: params[:number])
   end
 
 end

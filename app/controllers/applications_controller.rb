@@ -30,7 +30,7 @@ class ApplicationsController < ApplicationController
   end
 
   def set_application
-    @application = Application.find_by(token: params[:token])
+    @application = Application.find_by!(token: params[:token])
   end
 
 end

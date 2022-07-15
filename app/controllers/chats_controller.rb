@@ -9,7 +9,7 @@ class ChatsController < ApplicationController
 
   # GET /applications/:application_token/chats/:number
   def show
-    render json: @chat, status: status, serializer: ChatShowSerializer
+    render json: @chat, status: status, serializer: ChatSerializer
   end
 
   # POST /applications/:application_token/chats
@@ -24,11 +24,11 @@ class ChatsController < ApplicationController
   end
 
   def set_chat
-    @chat = Chat.find_by(number: params[:number])
+    @chat = Chat.find_by!(number: params[:number])
   end
 
   def set_application
-    @application = Application.find_by(token: params[:application_token])
+    @application = Application.find_by!(token: params[:application_token])
   end
 
 end

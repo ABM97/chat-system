@@ -22,7 +22,7 @@ services:
     restart: always
     ports:
       - 6379
-    command: redis-server --appendonly yes
+    command: redis-server
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       interval: 3s
@@ -55,7 +55,7 @@ services:
   sneakers:
     build: .
     restart: always
-    command: rake sneakers:run
+    command: bundle exec rake sneakers:run
     depends_on:
       mysql:
         condition: service_healthy
@@ -70,8 +70,7 @@ services:
 
   web-test:
     build: .
-    restart: always
-    command: bash -c "bundle exec rake db:migrate > /dev/null 2>&1 && bundle exec rake es:build_index && bundle exec rspec"
+    command: bash -c "bundle exec rake db:migrate > /dev/null 2>&1 && bundle exec rake es:build_index && bundle exec rspec -fd"
     depends_on:
       mysql:
         condition: service_healthy
