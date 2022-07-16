@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Applications API', type: :request do
+RSpec.describe 'Redis service', type: :request do
 
   let!(:application) { Application.create!({ name: "test_company_1" }) }
   let!(:application_token) { application.token }
