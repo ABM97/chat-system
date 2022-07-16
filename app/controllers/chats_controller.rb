@@ -24,7 +24,7 @@ class ChatsController < ApplicationController
   end
 
   def set_chat
-    @chat = Chat.find_by!(number: params[:number])
+    @chat = Chat.find_by!(application_id: @application.id, number: params[:number])
   end
 
   def set_application

@@ -1,3 +1,3 @@
 class ChatSerializer < ActiveModel::Serializer
- attributes :number
+ attributes :number, :messages_count
 end
