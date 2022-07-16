@@ -215,7 +215,6 @@ RSpec.describe 'Messages API', type: :request do
     context 'When message request body has non permitted param' do
       let!(:message_put_request_body) { { chat_id: 1232, body: "hello test company" } }
       it 'returns status code 204' do
-        p response.body
         expect(response).to have_http_status(204)
       end
       it 'successfully ignore non permitted param' do
