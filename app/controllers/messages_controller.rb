@@ -4,10 +4,12 @@ class MessagesController < ApplicationController
 
   # GET /applications/:application_token/chats/:chat_number/messages
   def index
+    page = params[:page].blank? ? 0 : params[:page]
+    size = params[:size].blank? ? 10 : params[:size]
     if params[:content].blank?
-      render json: @chat.messages.paginate(page: params[:page], per_page: params[:size]), status: status, each_serializer: MessageSerializer
+      render json: @chat.messages.paginate(page: page + 1, per_page: size), status: status, each_serializer: MessageSerializer
     else
-      render json: Message.search(params[:content], @chat.id, params[:page], params[:size])
+      render json: Message.search(params[:content], @chat.id, page, size)
                           .map { |message| ElasticSearchMessageIndexSerializer.map(message) },
              status: status
     end

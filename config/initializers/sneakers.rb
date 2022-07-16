@@ -11,4 +11,4 @@ Sneakers.configure connection: Connection.sneakers,
                    durable: true,
                    ack: true
 
-Sneakers.logger.level = Logger::ERROR
+Sneakers.logger.level = Logger::INFO

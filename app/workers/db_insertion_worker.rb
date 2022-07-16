@@ -8,7 +8,6 @@ class DbInsertionWorker
   def work(raw_post)
     ActiveRecord::Base.connection_pool.with_connection do
       job_data = JSON.parse(raw_post)
-      p job_data
       begin
         if job_data["table"] == "Chat"
           handle_chat_task(job_data)

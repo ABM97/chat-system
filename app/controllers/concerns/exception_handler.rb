@@ -27,7 +27,7 @@ module ExceptionHandler
   def map_error(e)
     error_klass = e.class.name
     return e if ERRORS.values.include?(error_klass)
-    ERRORS[error_klass].constantize&.new
+    ERRORS[error_klass].constantize&.new unless ERRORS[error_klass].nil?
   end
 
   def render_error(error)
