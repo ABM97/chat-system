@@ -36,7 +36,7 @@
 ### Redis
 > **Redis will be used in two parts of the app**
  > - **Number generation:** due to it's single threaded design, REDIS can efficiently handle concurrent generation of incremental counter in fast, efficient and precise manner.
- > - **Batching updates of counter to db:** to avoid putting a lot of headache on the database and as it's allowed to delay counter updates for nearly an hour REDIS was a good choice for batching as much counter updates then flushing them to the database
+ > - **Batching updates of counter values to db:** to avoid putting a lot of headache on the database and as it's allowed to delay counter updates for nearly an hour REDIS was a good choice for batching as much counter updates then flushing them to the database also this will lead to improved performance as we avoid locking for concurrent updates.
 
 ### Elastic-search
 > It was requested to match message content partially and this could be implemented in several ways in elastic search, it could be done using wildcards but this won't be efficient as elastic search will have to traverse all the index data to look for matches, in exchange of doing this costly operation wildcard will give 100% accurate results, another ways which what was implemented is to use custom analyser based on edegram with min-size of 3 and max-size of 10 and lowercase filters and a standard tokenizer to index the message content, the apply the analyser again to the search query to match results, this option will increase the performance dramatically but it won't be 100% percent accurate, accuracy could be improved further if more information was provided about the message content and the kind of search queries to be made.
