@@ -27,9 +27,9 @@
  
 ![chat_system drawio (2)](https://user-images.githubusercontent.com/25717199/179053717-29056869-c531-494a-8a09-e678cec47b16.png)
 
-   - The user send creation request [chat-message] this request will be async, we will just get the incremental number from redis and publish creation task for rabbitMQ and send send the number back to the user.
-   - A worker will consume task from rabbitMQ and insert the data to the database and Active model will send data to elastic search in case the task was message insertion
-   - Another worker will run every hour to check if a count has been updated in the last hour and sync the counter data to the database.
+   - The user send creation request [chat/message] this request will be async, we will just get the incremental number from redis for each [chat/message] and publish a creation task on rabbitMQ and send send the number back to the user.
+   - A worker will consume task from rabbitMQ and insert the data to the database and using elasticseacrh-model callbacke data will be sent to elastic search in case the task was message insertion
+   - Another worker will run every 1/2 hour to check if any count has been updated in the last 1/2 hour and sync the counter data to the database.
 
 
 ### List of commands to test the app
